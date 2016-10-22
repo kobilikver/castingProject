@@ -20,9 +20,23 @@ public class Client {
     }
 
     private Client(){
-        // create client socket & connext to server
-        try {
-            this.socket = new Socket("localhost", 3636);
+        // Read config info
+        String filePath = new File("").getAbsolutePath();
+        String fullPath = filePath.concat("\\src\\client\\config.txt");
+        try(BufferedReader br = new BufferedReader(new FileReader(fullPath)))
+        {
+            StringBuilder sb = new StringBuilder();
+            // Read host
+            String line = br.readLine();
+            String host = line;
+            // Read port
+            line = br.readLine();
+            int intPort = Integer.parseInt(line);
+
+            // create client socket & connext to server
+            this.socket = new Socket(host, intPort);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

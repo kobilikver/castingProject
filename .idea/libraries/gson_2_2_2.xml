@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="gson-2.2.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Desktop/Casting/jars/gson-2.6.2.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/Casting/jars/hibernate-jpa-2.1-api-1.0.0.Final.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/Casting/jars/mysql-connector-java-5.1.39-bin.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/Casting/jars/persistence-api-1.0.2.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/Casting/jars/opencsv-3.8.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
