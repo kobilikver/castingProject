@@ -7,13 +7,17 @@ import users.User;
 import java.lang.*;
 import java.io.*;
 import java.net.*;
+import java.nio.channels.SocketChannel;
 
 /**
  * Created by kobi626 on 04/10/2016.
  */
 public class Client {
     private User currentUser = null;
-    private static Socket socket = null;
+    private static SocketChannel socket = null;
+    private Gson gson = new Gson();
+    private ObjectOutputStream outToServer;
+    private ObjectInputStream inFromServer;
 
     private static class innerClient {
         public static final Client instance = new Client();
@@ -34,9 +38,18 @@ public class Client {
             int intPort = Integer.parseInt(line);
 
             // create client socket & connext to server
-            this.socket = new Socket(host, intPort);
+            this.socket = SocketChannel.open();
+            this.socket.configureBlocking(true);
+            this.socket.connect(new InetSocketAddress(host, intPort));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // create json object output stream
+        try {
+            outToServer = new ObjectOutputStream(socket.socket().getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -47,14 +60,8 @@ public class Client {
         return Client.innerClient.instance;
     }
 
-    public void tryToConnect(String username, String password) {
+    public Boolean tryToConnect(String username, String password) {
         try {
-            // create json object output stream
-            ObjectOutputStream outToServer = new ObjectOutputStream(socket.getOutputStream());
-
-            // create json object input stream
-            ObjectInputStream inFromServer = new ObjectInputStream(socket.getInputStream());
-
             // ********** SEND **********
             JsonObject dataJson = new JsonObject();
             dataJson.addProperty("clientCommand", 0);
@@ -74,34 +81,61 @@ public class Client {
 
             // ********** RECEIVE **********
             // get the server's answer as JSON-string
-            data = (String)inFromServer.readObject();
+            String jsonData = (String) inFromServer.readObject();
 
             // convert JSON-string to a json object
-            dataJson = gson.fromJson(data, JsonObject.class);
+            Answer answer = gson.fromJson(jsonData, Answer.class);
+            int type = answer.getType();
 
-            // has command done successfully?
-            boolean isSuccess = dataJson.get("success").getAsBoolean();
-
-            if (isSuccess == true) {
-                // connect has succeeded
-            } else {
-                // connect has failed!
-                // exception handling
+            if (type == 0) {
+                // exception
+            } else if (type == 1) {
+                // success
+                this.currentUser = gson.fromJson(answer.getData(), User.class);
+                System.out.println("success");
             }
-            // close socket
-            socket.close();
+//            // close socket
+//            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    public void send() {
-
+    public void sendToServer(String command) {
+        Thread thread = new Thread(){
+            public void run(){
+                // send JSON-string to server
+                try {
+                    outToServer.writeObject(command);
+                    outToServer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        thread.start();
     }
 
-    public void receive() {
-
+    public void receiveFromServer() {
+        Thread thread = new Thread(){
+            public void run(){
+                // get the server's answer as JSON-string
+                try {
+                    System.out.println("woohooo");
+                    String jsonData = null;
+                    // create json object input stream
+                    inFromServer = new ObjectInputStream(socket.socket().getInputStream());
+                    jsonData = (String) inFromServer.readObject();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        thread.start();
     }
 }

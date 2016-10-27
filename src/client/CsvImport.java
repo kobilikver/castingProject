@@ -13,11 +13,11 @@ import java.util.List;
 /**
  * Created by kobi626 on 20/10/2016.
  */
-public class CsvParser {
+public class CsvImport {
     private CSVReader reader = null;
     private String [] nextLine;
 
-    public CsvParser() {
+    public CsvImport() {
 
     }
 

@@ -1,5 +1,6 @@
 package users;
 
+import client.Client;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -25,9 +26,9 @@ public class Admin extends Editor {
         dataJson.addProperty("data", data);
 
         String command = gson.toJson(dataJson);
-        //client.sendToServer(command);
-
-        // get answer if succeeded
+        // send command to server
+        Client.getInstance().sendToServer(command);
+        Client.getInstance().receiveFromServer();
     }
 
     public void removeUser(String username) {

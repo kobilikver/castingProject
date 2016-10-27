@@ -1,6 +1,8 @@
 package client;
 
 import com.opencsv.CSVReader;
+import users.Admin;
+import users.User;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -13,8 +15,10 @@ import java.util.List;
 public class Test {
 
     public static void main(String[] args) {
-        Client.getInstance().tryToConnect("kobi", "likverman");
-
+//        Boolean result = Client.getInstance().tryToConnect("kobi", "kobkob");
+        Admin ad = new Admin();
+        User newUser = new User(0, "roi", "roiroi", "roi peretz", "roip@gmail.com");
+        ad.addUser(newUser);
 //        CSVReader reader = null;
 //        String [] nextLine;
 //        try {
